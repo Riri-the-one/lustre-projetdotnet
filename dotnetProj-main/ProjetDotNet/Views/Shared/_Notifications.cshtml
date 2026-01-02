@@ -1,0 +1,219 @@
+<style>
+	.custom-notification {
+		position: fixed;
+		top: 20px;
+		right: 20px;
+		z-index: 9999;
+		max-width: 400px;
+		width: 100%;
+		animation: slideInRight 0.4s ease-out;
+		box-shadow: 0 8px 32px rgba(61, 40, 23, 0.2);
+		border-radius: 16px;
+		overflow: hidden;
+	}
+
+	@@keyframes slideInRight {
+		from {
+			transform: translateX(100%);
+			opacity: 0;
+		}
+		to {
+			transform: translateX(0);
+			opacity: 1;
+		}
+	}
+
+	.notification-content {
+		display: flex;
+		align-items: center;
+		gap: 15px;
+		padding: 20px 25px;
+		position: relative;
+	}
+
+	.notification-success {
+		background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+		border-left: 5px solid #28a745;
+	}
+
+	.notification-error {
+		background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+		border-left: 5px solid #dc3545;
+	}
+
+	.notification-icon {
+		flex-shrink: 0;
+		width: 48px;
+		height: 48px;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 24px;
+		animation: scaleIn 0.3s ease-out 0.2s both;
+	}
+
+	@@keyframes scaleIn {
+		from {
+			transform: scale(0);
+		}
+		to {
+			transform: scale(1);
+		}
+	}
+
+	.notification-success .notification-icon {
+		background: #28a745;
+		color: white;
+	}
+
+	.notification-error .notification-icon {
+		background: #dc3545;
+		color: white;
+	}
+
+	.notification-message {
+		flex: 1;
+		color: #155724;
+		font-size: 16px;
+		font-weight: 500;
+		line-height: 1.5;
+	}
+
+	.notification-error .notification-message {
+		color: #721c24;
+	}
+
+	.notification-close {
+		background: none;
+		border: none;
+		font-size: 20px;
+		color: rgba(0, 0, 0, 0.5);
+		cursor: pointer;
+		padding: 0;
+		width: 24px;
+		height: 24px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: all 0.2s ease;
+		border-radius: 50%;
+		flex-shrink: 0;
+	}
+
+	.notification-close:hover {
+		background: rgba(0, 0, 0, 0.1);
+		color: rgba(0, 0, 0, 0.8);
+		transform: rotate(90deg);
+	}
+
+	.notification-progress {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		height: 4px;
+		background: rgba(0, 0, 0, 0.2);
+		animation: progressBar 5s linear forwards;
+	}
+
+	.notification-success .notification-progress {
+		background: #28a745;
+	}
+
+	.notification-error .notification-progress {
+		background: #dc3545;
+	}
+
+	@@keyframes progressBar {
+		from {
+			width: 100%;
+		}
+		to {
+			width: 0%;
+		}
+	}
+
+	@@media (max-width: 768px) {
+		.custom-notification {
+			right: 10px;
+			left: 10px;
+			max-width: none;
+		}
+	}
+</style>
+
+@if (TempData["successMessage"] is not null)
+{
+	<div class="custom-notification notification-success" id="successNotification">
+		<div class="notification-content">
+			<div class="notification-icon">
+				<i class="bi bi-check-circle-fill"></i>
+			</div>
+			<div class="notification-message">
+				@TempData["successMessage"]
+			</div>
+			<button type="button" class="notification-close" onclick="closeNotification('successNotification')" aria-label="Close">
+				<i class="bi bi-x"></i>
+			</button>
+		</div>
+		<div class="notification-progress"></div>
+	</div>
+	<script>
+		setTimeout(function() {
+			var notification = document.getElementById('successNotification');
+			if (notification) {
+				notification.style.transform = 'translateX(100%)';
+				notification.style.opacity = '0';
+				notification.style.transition = 'all 0.4s ease-out';
+				setTimeout(function() {
+					notification.remove();
+				}, 400);
+			}
+		}, 5000);
+	</script>
+}
+
+@if (TempData["errorMessage"] is not null)
+{
+	<div class="custom-notification notification-error" id="errorNotification">
+		<div class="notification-content">
+			<div class="notification-icon">
+				<i class="bi bi-exclamation-triangle-fill"></i>
+			</div>
+			<div class="notification-message">
+				@TempData["errorMessage"]
+			</div>
+			<button type="button" class="notification-close" onclick="closeNotification('errorNotification')" aria-label="Close">
+				<i class="bi bi-x"></i>
+			</button>
+		</div>
+		<div class="notification-progress"></div>
+	</div>
+	<script>
+		setTimeout(function() {
+			var notification = document.getElementById('errorNotification');
+			if (notification) {
+				notification.style.transform = 'translateX(100%)';
+				notification.style.opacity = '0';
+				notification.style.transition = 'all 0.4s ease-out';
+				setTimeout(function() {
+					notification.remove();
+				}, 400);
+			}
+		}, 6000);
+	</script>
+}
+
+<script>
+	function closeNotification(id) {
+		var notification = document.getElementById(id);
+		if (notification) {
+			notification.style.transform = 'translateX(100%)';
+			notification.style.opacity = '0';
+			notification.style.transition = 'all 0.4s ease-out';
+			setTimeout(function() {
+				notification.remove();
+			}, 400);
+		}
+	}
+</script>
