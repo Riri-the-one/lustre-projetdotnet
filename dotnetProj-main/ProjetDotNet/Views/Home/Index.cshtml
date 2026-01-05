@@ -14,20 +14,20 @@
 
 <!-- Discover Section -->
 <section class="section">
-	<div class="discover-section">
-		<div class="discover-content">
-			<div class="discover-bg"></div>
-			<div class="discover-card">
-				<h2 class="discover-title">Discover The Elegance Of Our Collection</h2>
-				<p class="discover-text">
-					Explore our elegant skincare collection, meticulously designed to complement your unique beauty routine. Discover timeless classics and modern innovations that showcase exceptional quality and premium ingredients.
-				</p>
-				<a href="#products" class="discover-link">Read More +</a>
+	<div class="container-fluid">
+		<div class="row align-items-center g-4">
+			<div class="col-lg-6">
+				<div class="discover-card">
+					<h2 class="discover-title">Discover The Elegance Of Our Collection</h2>
+					<p class="discover-text">
+						Explore our elegant skincare collection, meticulously designed to complement your unique beauty routine. Discover timeless classics and modern innovations that showcase exceptional quality and premium ingredients.
+					</p>
+					<a href="#products" class="discover-link smooth-scroll">Read More +</a>
+				</div>
 			</div>
-		</div>
-		<div class="discover-images">
-			<div class="discover-image discover-image-1"></div>
-			<div class="discover-image discover-image-2"></div>
+			<div class="col-lg-6">
+				<img src="/images/lustre-hero.jpg?v=@DateTime.Now.Ticks" alt="Lustre Elegant Collection" class="img-fluid rounded" style="max-height: 500px; width: 100%; object-fit: cover; box-shadow: 0 8px 32px rgba(61, 40, 23, 0.15);">
+			</div>
 		</div>
 	</div>
 </section>
@@ -103,7 +103,7 @@
 	<div class="product-grid" id="productGrid">
 		@foreach (var product in Model.Products)
 		{
-			<div class="product-card" data-product-name="@product.ProductName.ToLower()" data-category-name="@product.CategoryName.ToLower()" data-category-id="@product.CategoryId">
+			<div class="product-card" data-product-name="@(product.ProductName?.ToLower() ?? "")" data-category-name="@(product.CategoryName?.ToLower() ?? "")" data-category-id="@product.CategoryId">
 				@if (string.IsNullOrEmpty(product.Image))
 				{
 					<img src="/images/NoImage.png" class="product-image" alt="@product.ProductName">
@@ -178,6 +178,20 @@
 				width: 0%;
 			}
 		}
+		
+		/* Smooth scroll behavior */
+		html {
+			scroll-behavior: smooth;
+		}
+		
+		.discover-link.smooth-scroll {
+			cursor: pointer;
+			transition: all 0.3s ease;
+		}
+		
+		.discover-link.smooth-scroll:hover {
+			transform: translateX(5px);
+		}
 	</style>
 	<script>
 		// Scroll to products section if hash is present or categoryId is in URL
@@ -220,6 +234,22 @@
 					productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 				}
 			}
+		});
+		
+		// Smooth scroll for "Read More" link
+		document.querySelectorAll('.smooth-scroll').forEach(link => {
+			link.addEventListener('click', function(e) {
+				e.preventDefault();
+				const targetId = this.getAttribute('href');
+				const targetElement = document.querySelector(targetId);
+				if (targetElement) {
+					targetElement.scrollIntoView({ 
+						behavior: 'smooth', 
+						block: 'start',
+						inline: 'nearest'
+					});
+				}
+			});
 		});
 
 		// Real-time search functionality
