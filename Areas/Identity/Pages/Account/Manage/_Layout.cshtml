@@ -1,0 +1,31 @@
+﻿@{
+    if (ViewData.TryGetValue("ParentLayout", out var parentLayout) && parentLayout !=  null)
+    {
+        Layout = parentLayout.ToString();
+    }
+    else
+    {
+        Layout = "/Views/Shared/_Layout.cshtml";
+    }
+}
+
+<link href="~/css/identity.css" rel="stylesheet" />
+
+<div class="manage-account-container">
+    <div class="manage-account-header">
+        <h1>Manage your account</h1>
+        <h2>Change your account settings</h2>
+    </div>
+    <div class="manage-account-content">
+        <div class="manage-nav">
+            <partial name="_ManageNav" />
+        </div>
+        <div class="manage-content">
+            @RenderBody()
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}

@@ -1,0 +1,311 @@
+@model IEnumerable<Order>
+
+<style>
+	.orders-container {
+		max-width: 1200px;
+		margin: 40px auto;
+		padding: 0 20px;
+	}
+
+	.orders-header {
+		background: linear-gradient(135deg, #FFFFFF 0%, #FEFCF9 100%);
+		border-radius: 20px;
+		padding: 30px;
+		margin-bottom: 30px;
+		box-shadow: 0 4px 20px rgba(61, 40, 23, 0.08);
+		border: 1px solid rgba(232, 213, 196, 0.3);
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.orders-header h2 {
+		font-family: 'Playfair Display', serif;
+		font-size: 36px;
+		font-weight: 400;
+		color: var(--dark-brown);
+		margin: 0;
+		font-style: italic;
+		display: flex;
+		align-items: center;
+		gap: 15px;
+	}
+
+	.order-card {
+		background: linear-gradient(135deg, #FFFFFF 0%, #FEFCF9 100%);
+		border-radius: 20px;
+		padding: 30px;
+		margin-bottom: 30px;
+		box-shadow: 0 4px 20px rgba(61, 40, 23, 0.08);
+		border: 1px solid rgba(232, 213, 196, 0.3);
+	}
+
+	.order-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding-bottom: 20px;
+		border-bottom: 2px solid rgba(232, 213, 196, 0.3);
+		margin-bottom: 25px;
+	}
+
+	.order-info {
+		display: flex;
+		gap: 40px;
+		flex-wrap: wrap;
+	}
+
+	.order-info-item {
+		display: flex;
+		flex-direction: column;
+		gap: 5px;
+	}
+
+	.order-info-label {
+		font-size: 12px;
+		color: var(--light-brown);
+		text-transform: uppercase;
+		letter-spacing: 1px;
+		font-weight: 600;
+	}
+
+	.order-info-value {
+		font-size: 18px;
+		color: var(--dark-brown);
+		font-weight: 600;
+	}
+
+	.order-status-badge {
+		padding: 8px 16px;
+		border-radius: 20px;
+		font-size: 14px;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+
+	.status-pending {
+		background: #fff3cd;
+		color: #856404;
+	}
+
+	.status-processing {
+		background: #d1ecf1;
+		color: #0c5460;
+	}
+
+	.status-completed {
+		background: #d4edda;
+		color: #155724;
+	}
+
+	.status-cancelled {
+		background: #f8d7da;
+		color: #721c24;
+	}
+
+	.order-items {
+		margin-top: 25px;
+	}
+
+	.order-items-table {
+		width: 100%;
+		border-collapse: collapse;
+		margin-bottom: 20px;
+	}
+
+	.order-items-table thead {
+		background: linear-gradient(135deg, var(--accent-pink) 0%, rgba(232, 213, 196, 0.5) 100%);
+	}
+
+	.order-items-table th {
+		padding: 12px;
+		text-align: left;
+		font-weight: 600;
+		color: var(--dark-brown);
+		border-bottom: 2px solid rgba(232, 213, 196, 0.5);
+		font-size: 14px;
+	}
+
+	.order-items-table td {
+		padding: 15px 12px;
+		border-bottom: 1px solid rgba(232, 213, 196, 0.3);
+		vertical-align: middle;
+	}
+
+	.order-items-table tbody tr:hover {
+		background-color: rgba(232, 213, 196, 0.05);
+	}
+
+	.product-image-small {
+		width: 60px;
+		height: 75px;
+		object-fit: cover;
+		border-radius: 8px;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	}
+
+	.order-total {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 20px;
+		background: linear-gradient(135deg, var(--accent-pink) 0%, rgba(232, 213, 196, 0.3) 100%);
+		border-radius: 12px;
+		margin-top: 20px;
+	}
+
+	.order-total-label {
+		font-family: 'Playfair Display', serif;
+		font-size: 24px;
+		color: var(--dark-brown);
+		font-weight: 400;
+		font-style: italic;
+	}
+
+	.order-total-value {
+		font-size: 28px;
+		color: var(--light-brown);
+		font-weight: 600;
+	}
+
+	.empty-orders {
+		background: linear-gradient(135deg, #FFFFFF 0%, #FEFCF9 100%);
+		border-radius: 20px;
+		padding: 80px 40px;
+		text-align: center;
+		box-shadow: 0 4px 20px rgba(61, 40, 23, 0.08);
+		border: 1px solid rgba(232, 213, 196, 0.3);
+	}
+
+	.empty-orders-icon {
+		font-size: 80px;
+		color: var(--light-brown);
+		opacity: 0.5;
+		margin-bottom: 30px;
+	}
+
+	.empty-orders h3 {
+		font-family: 'Playfair Display', serif;
+		font-size: 32px;
+		color: var(--dark-brown);
+		margin-bottom: 15px;
+		font-style: italic;
+	}
+
+	.empty-orders p {
+		color: var(--text-dark);
+		font-size: 18px;
+		margin-bottom: 30px;
+	}
+</style>
+
+<div class="orders-container">
+	<div class="orders-header">
+		<h2>
+			<i class="bi bi-bag-check"></i>
+			My Orders
+		</h2>
+		<a href="/Identity/Account/Manage" class="btn btn-primary" style="border-radius: 12px;">
+			<i class="bi bi-arrow-left"></i> Back to Profile
+		</a>
+	</div>
+
+	@if (Model != null && Model.Any())
+	{
+		@foreach (var order in Model)
+		{
+			<div class="order-card">
+				<div class="order-header">
+					<div class="order-info">
+						<div class="order-info-item">
+							<span class="order-info-label">Order Date</span>
+							<span class="order-info-value">@order.CreateDate.ToString("dd MMM yyyy")</span>
+						</div>
+						<div class="order-info-item">
+							<span class="order-info-label">Order ID</span>
+							<span class="order-info-value">#@order.Id</span>
+						</div>
+					</div>
+					@{
+						var statusClass = "status-pending";
+						var statusName = order.OrderStatus?.StatusName ?? "Unknown";
+						if (statusName.ToLower().Contains("complete") || statusName.ToLower().Contains("delivered"))
+						{
+							statusClass = "status-completed";
+						}
+						else if (statusName.ToLower().Contains("process") || statusName.ToLower().Contains("shipped"))
+						{
+							statusClass = "status-processing";
+						}
+						else if (statusName.ToLower().Contains("cancel"))
+						{
+							statusClass = "status-cancelled";
+						}
+					}
+					<span class="order-status-badge @statusClass">@statusName</span>
+				</div>
+
+				@if (order.OrderDetails != null && order.OrderDetails.Any())
+				{
+					<div class="order-items">
+						<table class="order-items-table">
+							<thead>
+								<tr>
+									<th>Product</th>
+									<th>Image</th>
+									<th>Category</th>
+									<th>Unit Price (MAD)</th>
+									<th>Quantity</th>
+									<th>Total (MAD)</th>
+								</tr>
+							</thead>
+							<tbody>
+								@foreach (var item in order.OrderDetails)
+								{
+									<tr>
+										<td>
+											<strong>@item.Product.ProductName</strong>
+										</td>
+										<td>
+											@if (string.IsNullOrEmpty(item.Product.Image))
+											{
+												<img src="/images/NoImage.png" class="product-image-small" alt="product image" />
+											}
+											else
+											{
+												<img src="/images/@item.Product.Image" class="product-image-small" alt="@item.Product.ProductName" />
+											}
+										</td>
+										<td>@item.Product.Category?.CategoryName</td>
+										<td>@item.Product.Price.ToString("F2")</td>
+										<td>@item.Quantity</td>
+										<td><strong>@((item.Product.Price * item.Quantity).ToString("F2"))</strong></td>
+									</tr>
+								}
+							</tbody>
+						</table>
+
+						<div class="order-total">
+							<span class="order-total-label">Order Total:</span>
+							<span class="order-total-value">@(order.OrderDetails.Select(item => item.Product.Price * item.Quantity).Sum().ToString("F2")) MAD</span>
+						</div>
+					</div>
+				}
+			</div>
+		}
+	}
+	else
+	{
+		<div class="empty-orders">
+			<div class="empty-orders-icon">
+				<i class="bi bi-bag-x"></i>
+			</div>
+			<h3>No Orders Yet</h3>
+			<p>You haven't placed any orders yet. Start shopping to see your orders here!</p>
+			<a href="/Home/Index" class="btn btn-primary" style="padding: 12px 30px; border-radius: 12px; text-decoration: none; display: inline-block;">
+				<i class="bi bi-arrow-left"></i> Start Shopping
+			</a>
+		</div>
+	}
+</div>
