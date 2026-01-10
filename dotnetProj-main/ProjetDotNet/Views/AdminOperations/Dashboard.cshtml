@@ -1,0 +1,126 @@
+﻿@model ProjetDotNet.Models.DTOs.DashboardViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="dashboard-welcome">
+    <h1>Welcome Back</h1>
+    <p>Here's what's happening with your store today</p>
+</div>
+
+<div class="dashboard-grid">
+    <a href="/AdminOperations/AllOrders" class="stat-card" style="text-decoration: none; color: inherit; display: block; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 25px rgba(61, 40, 23, 0.15)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+        <div class="stat-card-header">
+            <h3 class="stat-card-title">Total Orders</h3>
+            <div class="stat-card-icon">
+                <i class="bi bi-receipt-cutoff"></i>
+            </div>
+        </div>
+        <div class="stat-card-value">@Model.TotalOrders</div>
+        <div class="stat-card-footer">
+            <i class="bi bi-info-circle"></i>
+            <span>Click to view →</span>
+        </div>
+    </a>
+
+    <div class="stat-card">
+        <div class="stat-card-header">
+            <h3 class="stat-card-title">Total Revenue</h3>
+            <div class="stat-card-icon">
+                <i class="bi bi-currency-dollar"></i>
+            </div>
+        </div>
+        <div class="stat-card-value">$@Model.TotalRevenue.ToString("N2")</div>
+        <div class="stat-card-footer">
+            <i class="bi bi-arrow-up-circle"></i>
+            <span>Paid orders only</span>
+        </div>
+    </div>
+
+    <a href="/Product/Index" class="stat-card" style="text-decoration: none; color: inherit; display: block; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 25px rgba(61, 40, 23, 0.15)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+        <div class="stat-card-header">
+            <h3 class="stat-card-title">Products</h3>
+            <div class="stat-card-icon">
+                <i class="bi bi-box-seam"></i>
+            </div>
+        </div>
+        <div class="stat-card-value">@Model.TotalProducts</div>
+        <div class="stat-card-footer">
+            <i class="bi bi-collection"></i>
+            <span>Click to manage →</span>
+        </div>
+    </a>
+
+    <a href="/Category/Index" class="stat-card" style="text-decoration: none; color: inherit; display: block; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 25px rgba(61, 40, 23, 0.15)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+        <div class="stat-card-header">
+            <h3 class="stat-card-title">Categories</h3>
+            <div class="stat-card-icon">
+                <i class="bi bi-tags"></i>
+            </div>
+        </div>
+        <div class="stat-card-value">@Model.TotalCategories</div>
+        <div class="stat-card-footer">
+            <i class="bi bi-folder"></i>
+            <span>Click to manage →</span>
+        </div>
+    </a>
+
+    <a href="/AdminOperations/AllOrders" class="stat-card" style="text-decoration: none; color: inherit; display: block; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 25px rgba(61, 40, 23, 0.15)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+        <div class="stat-card-header">
+            <h3 class="stat-card-title">Pending Orders</h3>
+            <div class="stat-card-icon">
+                <i class="bi bi-clock-history"></i>
+            </div>
+        </div>
+        <div class="stat-card-value">@Model.PendingOrders</div>
+        <div class="stat-card-footer">
+            <i class="bi bi-exclamation-circle"></i>
+            <span>Click to view →</span>
+        </div>
+    </a>
+
+    <a href="/Stock/Index" class="stat-card" style="text-decoration: none; color: inherit; display: block; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 25px rgba(61, 40, 23, 0.15)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+        <div class="stat-card-header">
+            <h3 class="stat-card-title">Low Stock</h3>
+            <div class="stat-card-icon">
+                <i class="bi bi-exclamation-triangle"></i>
+            </div>
+        </div>
+        <div class="stat-card-value">@Model.LowStockItems</div>
+        <div class="stat-card-footer">
+            <i class="bi bi-box-arrow-down"></i>
+            <span>Click to manage →</span>
+        </div>
+    </a>
+</div>
+
+<div class="quick-actions">
+    <a href="/AdminOperations/AllOrders" class="action-card">
+        <div class="action-card-icon">
+            <i class="bi bi-list-check"></i>
+        </div>
+        <h3 class="action-card-title">Manage Orders</h3>
+    </a>
+    
+    <a href="/Product/Index" class="action-card">
+        <div class="action-card-icon">
+            <i class="bi bi-box-arrow-up"></i>
+        </div>
+        <h3 class="action-card-title">Manage Products</h3>
+    </a>
+    
+    <a href="/Stock/Index" class="action-card">
+        <div class="action-card-icon">
+            <i class="bi bi-archive"></i>
+        </div>
+        <h3 class="action-card-title">Manage Stock</h3>
+    </a>
+    
+    <a href="/Reports/TopFiveSellingProducts" class="action-card">
+        <div class="action-card-icon">
+            <i class="bi bi-bar-chart-line"></i>
+        </div>
+        <h3 class="action-card-title">View Reports</h3>
+    </a>
+</div>

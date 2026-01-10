@@ -1,0 +1,394 @@
+@model ProductDisplayModel
+@{
+	ViewData["Title"] = "Lustre - Elegant Skincare";
+}
+
+<!-- Hero Banner -->
+<section class="hero-banner">
+	<div class="hero-content">
+		<h1 class="hero-tagline">Adorn Yourself In Elegance</h1>
+		<p class="hero-subtitle">Enhance Your Beauty with Premium Skincare from Lustre</p>
+		<a href="#products" class="shop-now-btn">Shop Now →</a>
+	</div>
+</section>
+
+<!-- Discover Section -->
+<section class="section">
+	<div class="container-fluid">
+		<div class="row align-items-center g-4">
+			<div class="col-lg-6">
+				<div class="discover-card">
+					<h2 class="discover-title">Discover The Elegance Of Our Collection</h2>
+					<p class="discover-text">
+						Explore our elegant skincare collection, meticulously designed to complement your unique beauty routine. Discover timeless classics and modern innovations that showcase exceptional quality and premium ingredients.
+					</p>
+					<a href="#products" class="discover-link smooth-scroll">Read More +</a>
+				</div>
+			</div>
+			<div class="col-lg-6">
+				<img src="/images/lustre-hero.jpg?v=@DateTime.Now.Ticks" alt="Lustre Elegant Collection" class="img-fluid rounded" style="max-height: 500px; width: 100%; object-fit: cover; box-shadow: 0 8px 32px rgba(61, 40, 23, 0.15);">
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- New Arrivals Section -->
+<section class="section" style="background-color: var(--white);">
+	<div class="section-header">
+		<h2 class="section-title-left" style="margin: 0;">New Arrivals</h2>
+		<div class="carousel-controls">
+			<button class="carousel-btn">←</button>
+			<button class="carousel-btn">→</button>
+		</div>
+	</div>
+	<div class="product-grid">
+		@foreach (var product in Model.Products.Take(3))
+		{
+			<div class="product-card">
+				@if (string.IsNullOrEmpty(product.Image))
+				{
+					<img src="/images/NoImage.png" class="product-image" alt="@product.ProductName">
+				}
+				else
+				{
+					<img src="/images/@product.Image" class="product-image" alt="@product.ProductName">
+				}
+				<div class="product-info">
+					<h3 class="product-name">@product.ProductName</h3>
+					<p class="product-price">@product.Price MAD</p>
+					@if (product.Quantity > 0)
+					{
+						<button type="button" onclick="add(@product.Id)" class="add-to-cart-btn">Add to Cart</button>
+					}
+					else
+					{
+						<div class="out-of-stock">Out of Stock</div>
+					}
+				</div>
+			</div>
+		}
+	</div>
+</section>
+
+<!-- Catalog Section -->
+<section class="section" id="products">
+	<h2 class="section-title">Catalog</h2>
+	
+	<!-- Filter Buttons -->
+	<div class="filter-buttons">
+		<a href="/Home/Index#products" class="filter-btn @(Model.CategoryId == 0 ? "active" : "")">All</a>
+		@foreach (var category in Model.Categories)
+		{
+			<a href="/Home/Index?categoryId=@category.Id#products" class="filter-btn @(Model.CategoryId == category.Id ? "active" : "")">@category.CategoryName</a>
+		}
+	</div>
+
+	<!-- Search Section -->
+	<div class="search-section" id="search-section">
+		<form asp-action="Index" class="search-form" method="get" id="searchForm">
+			<select name="categoryId" id="categorySelect" class="form-select">
+				<option value="0">All Categories</option>
+				@foreach (var category in Model.Categories)
+				{
+					<option value="@category.Id" selected="@(category.Id == Model.CategoryId)">@category.CategoryName</option>
+				}
+			</select>
+			<input type="text" name="sterm" id="searchInput" value="@Model.STerm" placeholder="Search products by name or category..." class="form-control">
+			<button type="submit" class="btn" style="display: none;">Search</button>
+			<button type="button" class="btn" style="background-color: var(--light-brown);" onclick="resetSearch(); return false;">Reset</button>
+		</form>
+	</div>
+
+	<!-- Product Grid -->
+	<div class="product-grid" id="productGrid">
+		@foreach (var product in Model.Products)
+		{
+			<div class="product-card" data-product-name="@(product.ProductName?.ToLower() ?? "")" data-category-name="@(product.CategoryName?.ToLower() ?? "")" data-category-id="@product.CategoryId">
+				@if (string.IsNullOrEmpty(product.Image))
+				{
+					<img src="/images/NoImage.png" class="product-image" alt="@product.ProductName">
+				}
+				else
+				{
+					<img src="/images/@product.Image" class="product-image" alt="@product.ProductName">
+				}
+				<div class="product-info">
+					<h3 class="product-name">@product.ProductName</h3>
+					<p style="color: var(--text-dark); margin-bottom: 5px; font-size: 14px;">@product.CategoryName</p>
+					<p style="color: var(--text-dark); margin-bottom: 10px; font-size: 14px;">@product.BrandName</p>
+					<p class="product-price">@product.Price MAD</p>
+					@if (product.Quantity > 0)
+					{
+						<button type="button" onclick="add(@product.Id)" class="add-to-cart-btn">Add to Cart</button>
+					}
+					else
+					{
+						<div class="out-of-stock">Out of Stock</div>
+					}
+				</div>
+			</div>
+		}
+	</div>
+	<div id="noProductsMessage" style="display: none; text-align: center; padding: 40px; color: var(--text-dark); font-size: 18px;">
+		<i class="bi bi-search" style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;"></i>
+		<p>No products found matching your search.</p>
+	</div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonial-section">
+	<div class="testimonial-content">
+		<h2 class="section-title">What Our Clients Say</h2>
+		<div class="stars">★★★★★</div>
+		<p class="testimonial-text">
+			"Beauty is a talent, just like being funny or being smart. I'm really used to the premium skincare products from Lustre."
+		</p>
+		<p class="testimonial-author">— Satisfied Customer, Beauty Enthusiast</p>
+	</div>
+</section>
+
+<!-- Newsletter Section -->
+<section class="newsletter-section">
+	<div class="newsletter-content">
+		<h2 class="newsletter-title">Get Your Perfect Skincare Routine Today – 25% Off Applied!</h2>
+		<form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
+			<input type="email" class="newsletter-input" placeholder="Enter email address..." required>
+			<button type="submit" class="newsletter-btn">Subscribe</button>
+		</form>
+	</div>
+</section>
+
+@section Scripts {
+	<style>
+		@@keyframes slideInRight {
+			from {
+				transform: translateX(100%);
+				opacity: 0;
+			}
+			to {
+				transform: translateX(0);
+				opacity: 1;
+			}
+		}
+		@@keyframes progressBar {
+			from {
+				width: 100%;
+			}
+			to {
+				width: 0%;
+			}
+		}
+		
+		/* Smooth scroll behavior */
+		html {
+			scroll-behavior: smooth;
+		}
+		
+		.discover-link.smooth-scroll {
+			cursor: pointer;
+			transition: all 0.3s ease;
+		}
+		
+		.discover-link.smooth-scroll:hover {
+			transform: translateX(5px);
+		}
+	</style>
+	<script>
+		// Scroll to products section if hash is present or categoryId is in URL
+		document.addEventListener('DOMContentLoaded', function() {
+			const urlParams = new URLSearchParams(window.location.search);
+			const categoryId = urlParams.get('categoryId');
+			const hash = window.location.hash;
+			
+			// Initialize filtering on page load
+			setTimeout(function() {
+				filterProducts();
+			}, 100);
+			
+			// If there's a categoryId in URL or hash is #products, scroll to products section
+			if (categoryId || hash === '#products' || hash === '#search-section') {
+				setTimeout(function() {
+					const targetId = hash === '#search-section' ? 'search-section' : 'products';
+					const targetSection = document.getElementById(targetId);
+					if (targetSection) {
+						targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+						// If it's the search section, focus on the input
+						if (targetId === 'search-section') {
+							setTimeout(function() {
+								const searchInput = document.getElementById('searchInput');
+								if (searchInput) {
+									searchInput.focus();
+								}
+							}, 300);
+						}
+					}
+				}, 100);
+			}
+		});
+
+		// Handle hash change (for when clicking Shop Now button)
+		window.addEventListener('hashchange', function() {
+			if (window.location.hash === '#products') {
+				const productsSection = document.getElementById('products');
+				if (productsSection) {
+					productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+				}
+			}
+		});
+		
+		// Smooth scroll for "Read More" link
+		document.querySelectorAll('.smooth-scroll').forEach(link => {
+			link.addEventListener('click', function(e) {
+				e.preventDefault();
+				const targetId = this.getAttribute('href');
+				const targetElement = document.querySelector(targetId);
+				if (targetElement) {
+					targetElement.scrollIntoView({ 
+						behavior: 'smooth', 
+						block: 'start',
+						inline: 'nearest'
+					});
+				}
+			});
+		});
+
+		// Real-time search functionality
+		const searchInput = document.getElementById('searchInput');
+		const categorySelect = document.getElementById('categorySelect');
+		const productGrid = document.getElementById('productGrid');
+		const noProductsMessage = document.getElementById('noProductsMessage');
+		
+		function filterProducts() {
+			if (!productGrid) return;
+			
+			const productCards = productGrid.querySelectorAll('.product-card');
+			const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
+			const selectedCategoryId = categorySelect ? parseInt(categorySelect.value) : 0;
+			let visibleCount = 0;
+
+			productCards.forEach(card => {
+				const productName = card.getAttribute('data-product-name') || '';
+				const categoryName = card.getAttribute('data-category-name') || '';
+				const categoryId = parseInt(card.getAttribute('data-category-id') || '0');
+
+				const matchesSearch = !searchTerm || 
+					productName.includes(searchTerm) || 
+					categoryName.includes(searchTerm);
+				const matchesCategory = selectedCategoryId === 0 || categoryId === selectedCategoryId;
+
+				if (matchesSearch && matchesCategory) {
+					card.style.display = '';
+					visibleCount++;
+				} else {
+					card.style.display = 'none';
+				}
+			});
+
+			if (noProductsMessage) {
+				if (visibleCount === 0) {
+					noProductsMessage.style.display = 'block';
+					productGrid.style.display = 'none';
+				} else {
+					noProductsMessage.style.display = 'none';
+					productGrid.style.display = '';
+				}
+			}
+		}
+
+		// Add event listeners for real-time search
+		if (searchInput) {
+			searchInput.addEventListener('input', filterProducts);
+			searchInput.addEventListener('keyup', filterProducts);
+		}
+
+		if (categorySelect) {
+			categorySelect.addEventListener('change', filterProducts);
+		}
+
+		function resetSearch() {
+			if (searchInput) searchInput.value = '';
+			if (categorySelect) categorySelect.value = '0';
+			filterProducts();
+		}
+
+		// Show toast notification
+		function showToast(message, type = 'success') {
+			const toast = document.createElement('div');
+			toast.className = `custom-notification notification-${type}`;
+			toast.style.position = 'fixed';
+			toast.style.top = '20px';
+			toast.style.right = '20px';
+			toast.style.zIndex = '9999';
+			toast.style.maxWidth = '400px';
+			toast.style.width = '100%';
+			toast.style.animation = 'slideInRight 0.4s ease-out';
+			toast.style.boxShadow = '0 8px 32px rgba(61, 40, 23, 0.2)';
+			toast.style.borderRadius = '16px';
+			toast.style.overflow = 'hidden';
+			
+			const bgColor = type === 'success' ? 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)' : 'linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%)';
+			const borderColor = type === 'success' ? '#28a745' : '#dc3545';
+			const iconBg = type === 'success' ? '#28a745' : '#dc3545';
+			const icon = type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill';
+			const textColor = type === 'success' ? '#155724' : '#721c24';
+			
+			toast.style.background = bgColor;
+			toast.style.borderLeft = `5px solid ${borderColor}`;
+			
+			toast.innerHTML = `
+				<div style="display: flex; align-items: center; gap: 15px; padding: 20px 25px; position: relative;">
+					<div style="flex-shrink: 0; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; background: ${iconBg}; color: white;">
+						<i class="bi ${icon}"></i>
+					</div>
+					<div style="flex: 1; color: ${textColor}; font-size: 16px; font-weight: 500; line-height: 1.5;">
+						${message}
+					</div>
+					<button type="button" onclick="this.closest('.custom-notification').remove()" style="background: none; border: none; font-size: 20px; color: rgba(0, 0, 0, 0.5); cursor: pointer; padding: 0; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; flex-shrink: 0;">
+						<i class="bi bi-x"></i>
+					</button>
+				</div>
+				<div style="position: absolute; bottom: 0; left: 0; height: 4px; background: ${borderColor}; animation: progressBar 5s linear forwards;"></div>
+			`;
+			
+			document.body.appendChild(toast);
+			
+			setTimeout(function() {
+				toast.style.transform = 'translateX(100%)';
+				toast.style.opacity = '0';
+				toast.style.transition = 'all 0.4s ease-out';
+				setTimeout(function() {
+					toast.remove();
+				}, 400);
+			}, 5000);
+		}
+
+		async function add(productId) {
+			var usernameEl = document.getElementById("username");
+			if(usernameEl == null){
+				window.location.href = "/Identity/Account/Login";
+				return;
+			}
+			try {
+				var response = await fetch(`/Cart/AddItem?productId=${productId}`);
+				if (response.status == 200) {
+					var result = await response.json();
+					var cartCountEl = document.getElementById("cartCount");
+					if (cartCountEl) {
+						cartCountEl.innerHTML = result;
+					}
+					// Show success notification
+					showToast("Product added to cart successfully!", "success");
+				}
+			}
+			catch (err) {
+				console.log(err);
+				showToast("Error adding product to cart", "error");
+			}
+		}
+
+		function subscribeNewsletter(event) {
+			event.preventDefault();
+			showToast("Thank you for subscribing! You'll receive 25% off on your next purchase.", "success");
+		}
+	</script>
+}

@@ -1,0 +1,299 @@
+@model ShoppingCart
+@{
+	ViewData["Title"] = "My Cart";
+}
+
+<style>
+	.cart-container {
+		max-width: 1200px;
+		margin: 40px auto;
+		padding: 0 20px;
+	}
+
+	.cart-header {
+		background: linear-gradient(135deg, #FFFFFF 0%, #FEFCF9 100%);
+		border-radius: 20px;
+		padding: 30px;
+		margin-bottom: 30px;
+		box-shadow: 0 4px 20px rgba(61, 40, 23, 0.08);
+		border: 1px solid rgba(232, 213, 196, 0.3);
+	}
+
+	.cart-header h2 {
+		font-family: 'Playfair Display', serif;
+		font-size: 36px;
+		font-weight: 400;
+		color: var(--dark-brown);
+		margin: 0;
+		font-style: italic;
+		display: flex;
+		align-items: center;
+		gap: 15px;
+	}
+
+	.cart-table-container {
+		background: linear-gradient(135deg, #FFFFFF 0%, #FEFCF9 100%);
+		border-radius: 20px;
+		padding: 30px;
+		box-shadow: 0 4px 20px rgba(61, 40, 23, 0.08);
+		border: 1px solid rgba(232, 213, 196, 0.3);
+		margin-bottom: 30px;
+	}
+
+	.cart-table {
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+	.cart-table thead {
+		background: linear-gradient(135deg, var(--accent-pink) 0%, rgba(232, 213, 196, 0.5) 100%);
+	}
+
+	.cart-table th {
+		padding: 15px;
+		text-align: left;
+		font-weight: 600;
+		color: var(--dark-brown);
+		border-bottom: 2px solid rgba(232, 213, 196, 0.5);
+	}
+
+	.cart-table td {
+		padding: 20px 15px;
+		border-bottom: 1px solid rgba(232, 213, 196, 0.3);
+		vertical-align: middle;
+	}
+
+	.cart-table tbody tr:hover {
+		background-color: rgba(232, 213, 196, 0.1);
+	}
+
+	.product-image {
+		width: 100px;
+		height: 120px;
+		object-fit: cover;
+		border-radius: 12px;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	}
+
+	.product-name {
+		font-weight: 600;
+		color: var(--dark-brown);
+		font-size: 16px;
+	}
+
+	.product-category {
+		color: var(--light-brown);
+		font-size: 14px;
+		margin-top: 5px;
+	}
+
+	.quantity-controls {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+
+	.quantity-btn {
+		width: 35px;
+		height: 35px;
+		border-radius: 8px;
+		border: none;
+		font-size: 18px;
+		cursor: pointer;
+		transition: all 0.3s ease;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.btn-info {
+		background: var(--light-brown);
+		color: white;
+	}
+
+	.btn-info:hover {
+		background: var(--dark-brown);
+		transform: scale(1.05);
+	}
+
+	.out-of-stock {
+		padding: 8px 12px;
+		border: 1px solid #dc3545;
+		color: #dc3545;
+		border-radius: 8px;
+		font-size: 12px;
+		font-weight: 600;
+		display: inline-block;
+	}
+
+	.cart-summary {
+		background: linear-gradient(135deg, #FFFFFF 0%, #FEFCF9 100%);
+		border-radius: 20px;
+		padding: 30px;
+		box-shadow: 0 4px 20px rgba(61, 40, 23, 0.08);
+		border: 1px solid rgba(232, 213, 196, 0.3);
+	}
+
+	.total-amount {
+		font-family: 'Playfair Display', serif;
+		font-size: 32px;
+		color: var(--dark-brown);
+		margin: 20px 0;
+		font-weight: 400;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.total-label {
+		font-size: 24px;
+	}
+
+	.total-value {
+		color: var(--light-brown);
+		font-weight: 600;
+	}
+
+	.checkout-btn {
+		width: 100%;
+		padding: 16px;
+		background: linear-gradient(135deg, var(--dark-brown) 0%, var(--light-brown) 100%);
+		color: white;
+		border: none;
+		border-radius: 12px;
+		font-size: 18px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.3s ease;
+		margin-top: 20px;
+	}
+
+	.checkout-btn:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 6px 20px rgba(61, 40, 23, 0.2);
+	}
+
+	.empty-cart {
+		background: linear-gradient(135deg, #FFFFFF 0%, #FEFCF9 100%);
+		border-radius: 20px;
+		padding: 80px 40px;
+		text-align: center;
+		box-shadow: 0 4px 20px rgba(61, 40, 23, 0.08);
+		border: 1px solid rgba(232, 213, 196, 0.3);
+	}
+
+	.empty-cart-icon {
+		font-size: 80px;
+		color: var(--light-brown);
+		opacity: 0.5;
+		margin-bottom: 30px;
+	}
+
+	.empty-cart h3 {
+		font-family: 'Playfair Display', serif;
+		font-size: 32px;
+		color: var(--dark-brown);
+		margin-bottom: 15px;
+		font-style: italic;
+	}
+
+	.empty-cart p {
+		color: var(--text-dark);
+		font-size: 18px;
+		margin-bottom: 30px;
+	}
+</style>
+
+<div class="cart-container">
+	@if (Model != null && Model.CartDetails != null && Model.CartDetails.Count > 0)
+	{
+		<div class="cart-header">
+			<h2>
+				<i class="bi bi-cart3"></i>
+				My Shopping Cart
+			</h2>
+		</div>
+
+		<div class="cart-table-container">
+			<table class="cart-table">
+				<thead>
+					<tr>
+						<th>Product</th>
+						<th>Image</th>
+						<th>Category</th>
+						<th>Unit Price (MAD)</th>
+						<th>Quantity</th>
+						<th>Total Price (MAD)</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var item in Model.CartDetails)
+					{
+						<tr>
+							<td>
+								<div class="product-name">@item.Product.ProductName</div>
+							</td>
+							<td>
+								@if (string.IsNullOrEmpty(item.Product.Image))
+								{
+									<img src="/images/NoImage.png" class="product-image" alt="product image" />
+								}
+								else
+								{
+									<img src="/images/@item.Product.Image" class="product-image" alt="@item.Product.ProductName" />
+								}
+							</td>
+							<td>
+								<div class="product-category">@item.Product.Category?.CategoryName</div>
+							</td>
+							<td>@item.Product.Price.ToString("F2")</td>
+							<td>@item.Quantity</td>
+							<td><strong>@((item.Product.Price * item.Quantity).ToString("F2"))</strong></td>
+							<td>
+								<div class="quantity-controls">
+									@if (item.Quantity < (item.Product.Stock?.Quantity ?? 0))
+									{
+										<a class="quantity-btn btn-info" href="/Cart/AddItem?productId=@item.ProductId&&redirect=1" title="Increase quantity">
+											<i class="bi bi-plus"></i>
+										</a>
+									}
+									else
+									{
+										<span class="out-of-stock">Out of stock</span>
+									}
+									<a class="quantity-btn btn-info" href="/Cart/RemoveItem?productId=@item.ProductId" title="Decrease quantity">
+										<i class="bi bi-dash"></i>
+									</a>
+								</div>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+
+		<div class="cart-summary">
+			<div class="total-amount">
+				<span class="total-label">Total:</span>
+				<span class="total-value">@(Model.CartDetails.Select(item => item.Product.Price * item.Quantity).Sum().ToString("F2")) MAD</span>
+			</div>
+			<a class="checkout-btn" href="/Cart/Checkout">
+				<i class="bi bi-credit-card"></i> Proceed to Checkout
+			</a>
+		</div>
+	}
+	else
+	{
+		<div class="empty-cart">
+			<div class="empty-cart-icon">
+				<i class="bi bi-cart-x"></i>
+			</div>
+			<h3>Your Cart is Empty</h3>
+			<p>Looks like you haven't added any items to your cart yet.</p>
+			<a href="/Home/Index" class="btn btn-primary" style="padding: 12px 30px; border-radius: 12px; text-decoration: none; display: inline-block;">
+				<i class="bi bi-arrow-left"></i> Continue Shopping
+			</a>
+		</div>
+	}
+</div>
