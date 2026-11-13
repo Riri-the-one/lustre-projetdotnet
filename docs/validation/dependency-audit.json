@@ -1,0 +1,9 @@
+{
+  "checkedAt": "2026-11-13T18:32:57.690Z",
+  "packagesChecked": 110,
+  "sources": [
+    "https://api.nuget.org/v3-vulnerabilities/2026.11.12.23.26.09/vulnerability.base.json",
+    "https://api.nuget.org/v3-vulnerabilities/2026.11.12.23.26.09/2026.11.13.17.26.13/vulnerability.update.json"
+  ],
+  "findings": []
+}

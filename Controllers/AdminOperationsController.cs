@@ -13,7 +13,7 @@ public class AdminOperationsController : Controller
 {
     private readonly IUserOrderRepository _userOrderRepository;
     private readonly ApplicationDbContext _context;
-    
+
     public AdminOperationsController(IUserOrderRepository userOrderRepository, ApplicationDbContext context)
     {
         _userOrderRepository = userOrderRepository;
@@ -28,15 +28,17 @@ public class AdminOperationsController : Controller
         return View(orders);
     }
 
+    [HttpPost]
     public async Task<IActionResult> TogglePaymentStatus(int orderId)
     {
         try
         {
             await _userOrderRepository.TogglePaymentStatus(orderId);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // log exception here
+            HttpContext.RequestServices.GetRequiredService<ILogger<AdminOperationsController>>().LogError(ex, "Payment confirmation failed");
+            TempData["errorMessage"] = "Payment could not be confirmed.";
         }
         return RedirectToAction(nameof(AllOrders));
     }
@@ -78,16 +80,15 @@ public class AdminOperationsController : Controller
             await _userOrderRepository.ChangeOrderStatus(data);
             TempData["msg"] = "Updated successfully";
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // catch exception here
+            HttpContext.RequestServices.GetRequiredService<ILogger<AdminOperationsController>>().LogError(ex, "Status update failed");
             TempData["msg"] = "Something went wrong";
         }
         return RedirectToAction(nameof(UpdateOrderStatus), new { orderId = data.OrderId });
     }
 
     [HttpPost]
-    [IgnoreAntiforgeryToken]
     public async Task<IActionResult> UpdateOrderStatusAjax([FromBody] UpdateOrderStatusModel data)
     {
         try
@@ -97,12 +98,9 @@ public class AdminOperationsController : Controller
                 return Json(new { success = false, message = "Invalid data" });
             }
             await _userOrderRepository.ChangeOrderStatus(data);
-            var updatedOrder = await _context.Orders
-                .Include(o => o.OrderStatus)
-                .FirstOrDefaultAsync(o => o.Id == data.OrderId);
             var newStatus = await _context.OrderStatuses.FindAsync(data.OrderStatusId);
-            return Json(new { 
-                success = true, 
+            return Json(new {
+                success = true,
                 message = "Status updated successfully",
                 newStatus = newStatus?.StatusName ?? "Unknown",
                 newStatusId = data.OrderStatusId
@@ -110,7 +108,8 @@ public class AdminOperationsController : Controller
         }
         catch (Exception ex)
         {
-            return Json(new { success = false, message = "Something went wrong: " + ex.Message });
+            HttpContext.RequestServices.GetRequiredService<ILogger<AdminOperationsController>>().LogError(ex, "Status update failed");
+            return Json(new { success = false, message = "The order could not be updated. Refresh and check its current status." });
         }
     }
 
@@ -118,28 +117,29 @@ public class AdminOperationsController : Controller
     public async Task<IActionResult> Dashboard()
     {
         var orders = await _context.Orders
+            .Include(o => o.OrderStatus)
             .Include(o => o.OrderDetails)
             .ToListAsync();
-        var products = await _context.Products.ToListAsync();
-        var categories = await _context.Categories.ToListAsync();
-        var stocks = await _context.Stocks.ToListAsync();
-        
+        var productCount = await _context.Products.CountAsync();
+        var categoryCount = await _context.Categories.CountAsync();
+        var lowStockCount = await _context.Products.CountAsync(p => p.Stock == null || p.Stock.Quantity < 10);
+
         var totalRevenue = orders
-            .Where(o => o.IsPaid && o.OrderDetails != null)
+            .Where(o => o.IsPaid && o.OrderStatus.StatusName != "Cancelled" && o.OrderDetails != null)
             .Sum(o => o.OrderDetails.Sum(od => od.Quantity * (decimal)od.UnitPrice));
-        var pendingOrders = orders.Count(o => !o.IsPaid);
-        var lowStockItems = stocks.Count(s => s.Quantity < 10);
-        
+        var pendingOrders = orders.Count(o => o.OrderStatus.StatusName == "Pending");
+        var lowStockItems = lowStockCount;
+
         var viewModel = new DashboardViewModel
         {
             TotalOrders = orders.Count,
-            TotalProducts = products.Count,
-            TotalCategories = categories.Count,
+            TotalProducts = productCount,
+            TotalCategories = categoryCount,
             TotalRevenue = totalRevenue,
             PendingOrders = pendingOrders,
             LowStockItems = lowStockItems
         };
-        
+
         return View(viewModel);
     }
 

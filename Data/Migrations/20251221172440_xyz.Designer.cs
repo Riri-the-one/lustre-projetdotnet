@@ -13,7 +13,7 @@ namespace ProjetDotNet.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20251221172440_xyz")]
-    partial class xyz
+    partial class Xyz
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

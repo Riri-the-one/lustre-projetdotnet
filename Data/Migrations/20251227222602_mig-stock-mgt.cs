@@ -5,7 +5,7 @@
 namespace ProjetDotNet.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class migstockmgt : Migration
+    public partial class MigStockMgt : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

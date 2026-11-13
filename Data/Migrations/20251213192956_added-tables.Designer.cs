@@ -13,7 +13,7 @@ namespace ProjetDotNet.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20251213192956_added-tables")]
-    partial class addedtables
+    partial class AddedTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

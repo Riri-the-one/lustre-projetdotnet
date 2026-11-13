@@ -1,0 +1,35 @@
+{
+  "browser": "Microsoft Edge via Playwright",
+  "checks": [
+    "Home renders",
+    "Case-insensitive catalogue search",
+    "Category filter",
+    "Real Identity registration",
+    "Real Identity customer login",
+    "Cart add through CSRF-protected JavaScript",
+    "Checkout completes with simulated payment",
+    "Customer order history",
+    "Customer denied administrator access",
+    "Real Identity administrator login",
+    "Administrator products",
+    "Administrator stock",
+    "Administrator status update with CSRF header",
+    "Administrator simulated payment confirmation",
+    "Administrator order view",
+    "Responsive widths inspected: 320, 390, 768, 1440",
+    "No JavaScript exceptions or horizontal page overflow"
+  ],
+  "javascriptErrors": [],
+  "resourceErrors": [],
+  "overflow": [],
+  "failedRequests": [
+    {
+      "url": "http://127.0.0.1:5087/Cart/GetTotalItemInCart",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "http://127.0.0.1:5087/AdminOperations/AllOrders",
+      "error": "net::ERR_ABORTED"
+    }
+  ]
+}

@@ -29,8 +29,9 @@ namespace ProjetDotNet.Controllers
 
                 return View(vm);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                HttpContext.RequestServices.GetRequiredService<ILogger<ReportsController>>().LogError(ex, "Report generation failed");
                 TempData["errorMessage"] = "Something went wrong";
                 return RedirectToAction("Index", "Home");
             }

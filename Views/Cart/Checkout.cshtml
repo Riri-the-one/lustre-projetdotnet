@@ -105,7 +105,9 @@
 	</div>
 
 	<div class="checkout-form-container">
-		<form asp-action="Checkout">
+		<p>Demonstration only. No payment is processed. Final prices and stock are checked when you place the order.</p>
+		<form asp-action="Checkout" method="post">
+            <input asp-for="CheckoutToken" type="hidden" />
 			<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
 			<div class="form-floating">

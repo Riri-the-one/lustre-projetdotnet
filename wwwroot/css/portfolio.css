@@ -1,0 +1,35 @@
+/* Shared refinements preserve Lustre's warm skincare identity. */
+:root { --lustre-focus: #75523b; }
+*, *::before, *::after { box-sizing: border-box; }
+body { background-color: #faf8f5; overflow-wrap: anywhere; }
+img { max-width: 100%; }
+:focus-visible { outline: 3px solid var(--lustre-focus); outline-offset: 4px; }
+button, input, select, textarea { font: inherit; }
+button, .btn { min-height: 40px; }
+.product-image img, img.product-image { object-fit: contain; background: #f6f2ed; }
+.table-responsive { max-width: 100%; overflow-x: auto; }
+form { max-width: 100%; }
+.quantity-controls form { display: inline-flex; margin: 0; }
+.field-validation-error, .validation-summary-errors { color: #9b2626; }
+@media (max-width: 768px) {
+    .header-container { flex-direction: column; gap: 16px; padding: 16px; }
+    .nav-links { flex-wrap: wrap; justify-content: center; gap: 14px; padding: 0; }
+    .footer-content { grid-template-columns: 1fr; padding: 24px; }
+    .hero-content { max-width: 100%; padding: 24px 16px; }
+    .hero-title { font-size: clamp(2rem, 8vw, 3rem); }
+    .main-container { max-width: 100%; }
+    .content, .main-content { min-width: 0; }
+    .orders-layout { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+.cart-table-container { max-width: 100%; overflow-x: auto; }
+.right-panel { min-width: 0; }
+.orders-layout > * { min-width: 0; }
+@media (max-width: 768px) {
+    .orders-container { padding: 12px !important; }
+    .orders-list-panel, .status-panel, .details-panel { padding: 12px !important; }
+    .cart-table-container { padding: 12px; }
+    .cart-summary { flex-wrap: wrap; gap: 20px; }
+}

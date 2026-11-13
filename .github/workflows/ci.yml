@@ -1,0 +1,44 @@
+name: .NET CI
+on:
+  push:
+    branches: [main, feat/lustre-portfolio-finalization]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Restore and audit NuGet dependencies
+        run: dotnet restore ProjetDotNet.sln -p:NuGetAuditMode=all -warnaserror:NU1901,NU1902,NU1903,NU1904
+      - name: Build
+        run: dotnet build ProjetDotNet.sln --configuration Release --no-restore
+      - name: SQLite integration and HTTP security tests
+        run: dotnet test ProjetDotNet.sln --configuration Release --no-build --logger trx --results-directory .artifacts/test-results
+      - name: Check new C# formatting
+        run: dotnet format whitespace ProjetDotNet.sln --no-restore --verify-no-changes --include Data/DemoData.cs Data/AdminProvisioner.cs Shared/FileService.cs Repositories/CartRepository.cs tests/Lustre.Tests
+      - name: Check patch whitespace
+        run: git diff --check
+      - name: Supplementary dependency advisory check
+        run: node scripts/audit-dependencies.cjs
+      - name: Audit browser and bundled JavaScript dependencies
+        run: |
+          npm ci --prefix tests/browser --ignore-scripts
+          npm audit --prefix tests/browser --audit-level=low
+          npm ci --prefix scripts/vendor --ignore-scripts
+          npm audit --prefix scripts/vendor --audit-level=low
+      - name: Scan for known credential patterns
+        run: node scripts/check-secrets.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-and-audit-results
+          path: .artifacts/

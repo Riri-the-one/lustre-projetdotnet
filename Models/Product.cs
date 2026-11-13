@@ -17,25 +17,26 @@ namespace ProjetDotNet.Models
         public string? BrandName { get; set; }
 
         [Required]
-        public double Price { get; set; }
+        [Range(typeof(decimal), "0.01", "999999.99")]
+    public decimal Price { get; set; }
 
         public string? Image { get; set; }
 
         [Required]
         public int CategoryId { get; set; }
-        public Category Category { get; set; }
+        public Category Category { get; set; } = null!;
 
-        public List<OrderDetail> OrderDetail { get; set; }
-        public List<CartDetail> CartDetail { get; set; }
+        public List<OrderDetail> OrderDetail { get; set; } = [];
+        public List<CartDetail> CartDetail { get; set; } = [];
 
         [NotMapped]
         public string? CategoryName { get; set; }
 
-        
-        public Stock? Stock { get; set; } 
+
+        public Stock? Stock { get; set; }
 
         [NotMapped]
         public int Quantity { get; set; }
-        
+
     }
 }

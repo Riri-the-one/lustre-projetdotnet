@@ -14,9 +14,11 @@ public class ProductDTO
     [MaxLength(40)]
     public string? BrandName { get; set; }
     [Required]
-    public double Price { get; set; }
+    [Range(typeof(decimal), "0.01", "999999.99")]
+    public decimal Price { get; set; }
     public string? Image { get; set; }
     [Required]
+    [Range(1, int.MaxValue)]
     public int CategoryId { get; set; }
     public IFormFile? ImageFile { get; set; }
     public IEnumerable<SelectListItem>? CategoryList { get; set; }

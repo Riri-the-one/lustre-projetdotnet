@@ -36,13 +36,14 @@ namespace ProjetDotNet.Controllers
             }
             try
             {
-                var categoryToAdd = new Category { CategoryName = category.CategoryName, Id = category.Id };
+                var categoryToAdd = new Category { CategoryName = category.CategoryName!, Id = 0 };
                 await _categoryRepo.AddCategory(categoryToAdd);
                 TempData["successMessage"] = "Category added successfully";
                 return RedirectToAction(nameof(AddCategory));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                HttpContext.RequestServices.GetRequiredService<ILogger<CategoryController>>().LogError(ex, "Category operation failed");
                 TempData["errorMessage"] = "Category could not be added!";
                 return View(category);
             }
@@ -57,7 +58,7 @@ namespace ProjetDotNet.Controllers
             var categoryToUpdate = new CategoryDTO
             {
                 Id = category.Id,
-                CategoryName = category.CategoryName
+                CategoryName = category.CategoryName!
             };
             return View(categoryToUpdate);
         }
@@ -71,25 +72,30 @@ namespace ProjetDotNet.Controllers
             }
             try
             {
-                var category = new Category { CategoryName = categoryToUpdate.CategoryName, Id = categoryToUpdate.Id };
+                var category = new Category { CategoryName = categoryToUpdate.CategoryName!, Id = categoryToUpdate.Id };
                 await _categoryRepo.UpdateCategory(category);
                 TempData["successMessage"] = "Category updated successfully";
                 return RedirectToAction(nameof(Index));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                HttpContext.RequestServices.GetRequiredService<ILogger<CategoryController>>().LogError(ex, "Category operation failed");
                 TempData["errorMessage"] = "Category could not be updated!";
                 return View(categoryToUpdate);
             }
         }
 
+        [HttpPost]
         public async Task<IActionResult> DeleteCategory(int id)
         {
             var category = await _categoryRepo.GetCategoryById(id);
-            if (category is null)
-                throw new InvalidOperationException($"Category with id: {id} not found");
-
-            await _categoryRepo.DeleteCategory(category);
+            if (category is null) return NotFound();
+            try { await _categoryRepo.DeleteCategory(category); }
+            catch (InvalidOperationException ex)
+            {
+                HttpContext.RequestServices.GetRequiredService<ILogger<CategoryController>>().LogWarning(ex, "Category deletion rejected");
+                TempData["errorMessage"] = "A category containing products cannot be deleted.";
+            }
             return RedirectToAction(nameof(Index));
         }
     }

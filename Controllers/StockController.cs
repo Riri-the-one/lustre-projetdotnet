@@ -27,6 +27,7 @@ namespace ProjetDotNet.Controllers
             var existingStock = await _stockRepo.GetStockByProductId(productId);
             var stock = new StockDTO
             {
+                OriginalQuantity = existingStock?.Quantity ?? 0,
                 ProductId = productId,
                 Quantity = existingStock != null ? existingStock.Quantity : 0
             };
@@ -47,7 +48,8 @@ namespace ProjetDotNet.Controllers
             }
             catch (Exception ex)
             {
-                TempData["errorMessage"] = $"An error occurred while updating stock: {ex.Message}";
+                HttpContext.RequestServices.GetRequiredService<ILogger<StockController>>().LogError(ex, "Stock update failed");
+                TempData["errorMessage"] = "Stock could not be updated. Refresh and try again.";
                 return View(stock);
             }
         }

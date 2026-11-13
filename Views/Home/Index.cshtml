@@ -36,10 +36,7 @@
 <section class="section" style="background-color: var(--white);">
 	<div class="section-header">
 		<h2 class="section-title-left" style="margin: 0;">New Arrivals</h2>
-		<div class="carousel-controls">
-			<button class="carousel-btn">←</button>
-			<button class="carousel-btn">→</button>
-		</div>
+
 	</div>
 	<div class="product-grid">
 		@foreach (var product in Model.Products.Take(3))
@@ -47,7 +44,7 @@
 			<div class="product-card">
 				@if (string.IsNullOrEmpty(product.Image))
 				{
-					<img src="/images/NoImage.png" class="product-image" alt="@product.ProductName">
+					<img src="/images/product-placeholder.svg" class="product-image" alt="@product.ProductName">
 				}
 				else
 				{
@@ -73,7 +70,7 @@
 <!-- Catalog Section -->
 <section class="section" id="products">
 	<h2 class="section-title">Catalog</h2>
-	
+
 	<!-- Filter Buttons -->
 	<div class="filter-buttons">
 		<a href="/Home/Index#products" class="filter-btn @(Model.CategoryId == 0 ? "active" : "")">All</a>
@@ -93,7 +90,7 @@
 					<option value="@category.Id" selected="@(category.Id == Model.CategoryId)">@category.CategoryName</option>
 				}
 			</select>
-			<input type="text" name="sterm" id="searchInput" value="@Model.STerm" placeholder="Search products by name or category..." class="form-control">
+			<input type="text" name="sterm" id="searchInput" value="@Model.STerm" aria-label="Search products by name" placeholder="Search products by name..." class="form-control">
 			<button type="submit" class="btn" style="display: none;">Search</button>
 			<button type="button" class="btn" style="background-color: var(--light-brown);" onclick="resetSearch(); return false;">Reset</button>
 		</form>
@@ -106,7 +103,7 @@
 			<div class="product-card" data-product-name="@(product.ProductName?.ToLower() ?? "")" data-category-name="@(product.CategoryName?.ToLower() ?? "")" data-category-id="@product.CategoryId">
 				@if (string.IsNullOrEmpty(product.Image))
 				{
-					<img src="/images/NoImage.png" class="product-image" alt="@product.ProductName">
+					<img src="/images/product-placeholder.svg" class="product-image" alt="@product.ProductName">
 				}
 				else
 				{
@@ -148,15 +145,7 @@
 </section>
 
 <!-- Newsletter Section -->
-<section class="newsletter-section">
-	<div class="newsletter-content">
-		<h2 class="newsletter-title">Get Your Perfect Skincare Routine Today – 25% Off Applied!</h2>
-		<form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
-			<input type="email" class="newsletter-input" placeholder="Enter email address..." required>
-			<button type="submit" class="newsletter-btn">Subscribe</button>
-		</form>
-	</div>
-</section>
+<section class="newsletter-section"><div class="newsletter-content"><h2 class="newsletter-title">Build your daily skincare ritual</h2><p>Explore cleansers, moisturizers and everyday essentials.</p><a href="#products" class="newsletter-btn">Explore the catalogue</a></div></section>
 
 @section Scripts {
 	<style>
@@ -178,17 +167,17 @@
 				width: 0%;
 			}
 		}
-		
+
 		/* Smooth scroll behavior */
 		html {
 			scroll-behavior: smooth;
 		}
-		
+
 		.discover-link.smooth-scroll {
 			cursor: pointer;
 			transition: all 0.3s ease;
 		}
-		
+
 		.discover-link.smooth-scroll:hover {
 			transform: translateX(5px);
 		}
@@ -199,12 +188,12 @@
 			const urlParams = new URLSearchParams(window.location.search);
 			const categoryId = urlParams.get('categoryId');
 			const hash = window.location.hash;
-			
+
 			// Initialize filtering on page load
 			setTimeout(function() {
 				filterProducts();
 			}, 100);
-			
+
 			// If there's a categoryId in URL or hash is #products, scroll to products section
 			if (categoryId || hash === '#products' || hash === '#search-section') {
 				setTimeout(function() {
@@ -235,7 +224,7 @@
 				}
 			}
 		});
-		
+
 		// Smooth scroll for "Read More" link
 		document.querySelectorAll('.smooth-scroll').forEach(link => {
 			link.addEventListener('click', function(e) {
@@ -243,8 +232,8 @@
 				const targetId = this.getAttribute('href');
 				const targetElement = document.querySelector(targetId);
 				if (targetElement) {
-					targetElement.scrollIntoView({ 
-						behavior: 'smooth', 
+					targetElement.scrollIntoView({
+						behavior: 'smooth',
 						block: 'start',
 						inline: 'nearest'
 					});
@@ -257,10 +246,10 @@
 		const categorySelect = document.getElementById('categorySelect');
 		const productGrid = document.getElementById('productGrid');
 		const noProductsMessage = document.getElementById('noProductsMessage');
-		
+
 		function filterProducts() {
 			if (!productGrid) return;
-			
+
 			const productCards = productGrid.querySelectorAll('.product-card');
 			const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
 			const selectedCategoryId = categorySelect ? parseInt(categorySelect.value) : 0;
@@ -271,8 +260,8 @@
 				const categoryName = card.getAttribute('data-category-name') || '';
 				const categoryId = parseInt(card.getAttribute('data-category-id') || '0');
 
-				const matchesSearch = !searchTerm || 
-					productName.includes(searchTerm) || 
+				const matchesSearch = !searchTerm ||
+					productName.includes(searchTerm) ||
 					categoryName.includes(searchTerm);
 				const matchesCategory = selectedCategoryId === 0 || categoryId === selectedCategoryId;
 
@@ -325,16 +314,16 @@
 			toast.style.boxShadow = '0 8px 32px rgba(61, 40, 23, 0.2)';
 			toast.style.borderRadius = '16px';
 			toast.style.overflow = 'hidden';
-			
+
 			const bgColor = type === 'success' ? 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)' : 'linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%)';
 			const borderColor = type === 'success' ? '#28a745' : '#dc3545';
 			const iconBg = type === 'success' ? '#28a745' : '#dc3545';
 			const icon = type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill';
 			const textColor = type === 'success' ? '#155724' : '#721c24';
-			
+
 			toast.style.background = bgColor;
 			toast.style.borderLeft = `5px solid ${borderColor}`;
-			
+
 			toast.innerHTML = `
 				<div style="display: flex; align-items: center; gap: 15px; padding: 20px 25px; position: relative;">
 					<div style="flex-shrink: 0; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; background: ${iconBg}; color: white;">
@@ -349,9 +338,9 @@
 				</div>
 				<div style="position: absolute; bottom: 0; left: 0; height: 4px; background: ${borderColor}; animation: progressBar 5s linear forwards;"></div>
 			`;
-			
+
 			document.body.appendChild(toast);
-			
+
 			setTimeout(function() {
 				toast.style.transform = 'translateX(100%)';
 				toast.style.opacity = '0';
@@ -363,13 +352,15 @@
 		}
 
 		async function add(productId) {
-			var usernameEl = document.getElementById("username");
+			if (window.lustreCartBusy) return;
+            var usernameEl = document.getElementById("username");
 			if(usernameEl == null){
 				window.location.href = "/Identity/Account/Login";
 				return;
 			}
 			try {
-				var response = await fetch(`/Cart/AddItem?productId=${productId}`);
+				window.lustreCartBusy = true;
+                var response = await fetch(`/Cart/AddItem?productId=${productId}`, { method: 'POST', headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content } });
 				if (response.status == 200) {
 					var result = await response.json();
 					var cartCountEl = document.getElementById("cartCount");
@@ -378,17 +369,17 @@
 					}
 					// Show success notification
 					showToast("Product added to cart successfully!", "success");
-				}
+                } else { showToast("The requested quantity is unavailable.", "error"); }
 			}
 			catch (err) {
 				console.log(err);
 				showToast("Error adding product to cart", "error");
-			}
+            } finally { window.lustreCartBusy = false; }
 		}
 
-		function subscribeNewsletter(event) {
+		function unusedSubscribeNewsletter(event) {
 			event.preventDefault();
-			showToast("Thank you for subscribing! You'll receive 25% off on your next purchase.", "success");
+
 		}
 	</script>
 }

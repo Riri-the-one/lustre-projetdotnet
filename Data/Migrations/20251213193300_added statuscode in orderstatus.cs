@@ -5,7 +5,7 @@
 namespace ProjetDotNet.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class addedstatuscodeinorderstatus : Migration
+    public partial class AddedStatusCodeInOrderStatus : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

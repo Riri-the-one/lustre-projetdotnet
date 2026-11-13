@@ -13,7 +13,7 @@ namespace ProjetDotNet.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20251213193300_added statuscode in orderstatus")]
-    partial class addedstatuscodeinorderstatus
+    partial class AddedStatusCodeInOrderStatus
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

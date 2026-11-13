@@ -237,7 +237,7 @@
 							<td>
 								@if (string.IsNullOrEmpty(item.Product.Image))
 								{
-									<img src="/images/NoImage.png" class="product-image" alt="product image" />
+									<img src="/images/product-placeholder.svg" class="product-image" alt="product image" />
 								}
 								else
 								{
@@ -254,17 +254,17 @@
 								<div class="quantity-controls">
 									@if (item.Quantity < (item.Product.Stock?.Quantity ?? 0))
 									{
-										<a class="quantity-btn btn-info" href="/Cart/AddItem?productId=@item.ProductId&&redirect=1" title="Increase quantity">
+										<form asp-controller="Cart" asp-action="AddItem" method="post"><input type="hidden" name="productId" value="@item.ProductId" /><input type="hidden" name="redirect" value="1" /><button type="submit" class="quantity-btn btn-info" aria-label="Increase quantity">
 											<i class="bi bi-plus"></i>
-										</a>
+										</button></form>
 									}
 									else
 									{
 										<span class="out-of-stock">Out of stock</span>
 									}
-									<a class="quantity-btn btn-info" href="/Cart/RemoveItem?productId=@item.ProductId" title="Decrease quantity">
+									<form asp-controller="Cart" asp-action="RemoveItem" method="post"><input type="hidden" name="productId" value="@item.ProductId" /><button type="submit" class="quantity-btn btn-info" aria-label="Decrease quantity">
 										<i class="bi bi-dash"></i>
-									</a>
+									</button></form>
 								</div>
 							</td>
 						</tr>

@@ -15,14 +15,14 @@ public class ReportRepository : IReportRepository
 
     public async Task<IEnumerable<TopNSoldProductModel>> GetTopNSellingProductsByDate(DateTime startDate, DateTime endDate)
     {
-        var startDateParam = new SqlParameter("@startDate", startDate);
-        var endDateParam = new SqlParameter("@endDate", endDate);
-
-        var topFiveSoldProducts = await _context.Database
-            .SqlQueryRaw<TopNSoldProductModel>("exec Usp_GetTopNSellingProductsByDate @startDate,@endDate", startDateParam, endDateParam)
-            .ToListAsync();
-
-        return topFiveSoldProducts;
+        if (startDate > endDate) throw new ArgumentException("Start date must precede end date.");
+        return await _context.OrderDetails.AsNoTracking()
+            .Where(d => d.Order.IsPaid && d.Order.OrderStatus.StatusName != "Cancelled"
+                && d.Order.CreateDate >= startDate && d.Order.CreateDate <= endDate)
+            .GroupBy(d => new { d.ProductId, d.Product.ProductName, d.Product.BrandName })
+            .Select(g => new { g.Key.ProductName, g.Key.BrandName, TotalUnitSold = g.Sum(d => d.Quantity) })
+            .OrderByDescending(p => p.TotalUnitSold).Take(5)
+            .Select(p => new TopNSoldProductModel(p.ProductName!, p.BrandName!, p.TotalUnitSold)).ToListAsync();
     }
 }
 

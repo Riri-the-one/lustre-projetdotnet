@@ -27,7 +27,7 @@ namespace ProjetDotNet.Repositories
 
             if (!string.IsNullOrWhiteSpace(sTerm))
             {
-                productQuery = productQuery.Where(p => p.ProductName.StartsWith(sTerm.ToLower()));
+                productQuery = productQuery.Where(p => p.ProductName != null && p.ProductName.ToLower().Contains(sTerm.Trim().ToLower()));
             }
 
             if (categoryId > 0)
