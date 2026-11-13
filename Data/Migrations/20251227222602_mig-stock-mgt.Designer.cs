@@ -13,7 +13,7 @@ namespace ProjetDotNet.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20251227222602_mig-stock-mgt")]
-    partial class migstockmgt
+    partial class MigStockMgt
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

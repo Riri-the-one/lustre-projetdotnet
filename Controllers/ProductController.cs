@@ -50,6 +50,8 @@ namespace ProjetDotNet.Controllers
             if (!ModelState.IsValid)
                 return View(productToAdd);
 
+            string? uploadedImage = null;
+            productToAdd.Image = null;
             try
             {
                 if (productToAdd.ImageFile != null)
@@ -59,12 +61,13 @@ namespace ProjetDotNet.Controllers
 
                     string[] allowedExtensions = new[] { ".jpeg", ".jpg", ".png" };
                     string imageName = await _fileService.SaveFile(productToAdd.ImageFile, allowedExtensions);
+                    uploadedImage = imageName;
                     productToAdd.Image = imageName;
                 }
 
                 Product product = new()
                 {
-                    Id = productToAdd.Id,
+                    Id = 0,
                     ProductName = productToAdd.ProductName,
                     BrandName = productToAdd.BrandName,
                     Price = productToAdd.Price,
@@ -73,12 +76,15 @@ namespace ProjetDotNet.Controllers
                 };
 
                 await _productRepo.AddProduct(product);
+                uploadedImage = null;
                 TempData["successMessage"] = "Product added successfully";
                 return RedirectToAction(nameof(AddProduct));
             }
             catch (Exception ex)
             {
-                TempData["errorMessage"] = ex.Message;
+                HttpContext.RequestServices.GetRequiredService<ILogger<ProductController>>().LogError(ex, "Operation failed");
+                TempData["errorMessage"] = "The operation could not be completed. Check the data and try again.";
+                if (uploadedImage is not null) CleanupUpload(uploadedImage);
                 return View(productToAdd);
             }
         }
@@ -127,9 +133,13 @@ namespace ProjetDotNet.Controllers
             if (!ModelState.IsValid)
                 return View(productToUpdate);
 
+            string? uploadedImage = null;
             try
             {
-                string oldImage = "";
+                var current = await _productRepo.GetProductById(productToUpdate.Id);
+                if (current is null) return NotFound();
+                productToUpdate.Image = current.Image;
+                string? oldImage = null;
                 if (productToUpdate.ImageFile != null)
                 {
                     if (productToUpdate.ImageFile.Length > 1 * 1024 * 1024)
@@ -139,6 +149,7 @@ namespace ProjetDotNet.Controllers
                     string imageName = await _fileService.SaveFile(productToUpdate.ImageFile, allowedExtensions);
 
                     oldImage = productToUpdate.Image;
+                    uploadedImage = imageName;
                     productToUpdate.Image = imageName;
                 }
 
@@ -153,6 +164,7 @@ namespace ProjetDotNet.Controllers
                 };
 
                 await _productRepo.UpdateProduct(product);
+                uploadedImage = null;
 
                 if (!string.IsNullOrWhiteSpace(oldImage))
                     _fileService.DeleteFile(oldImage);
@@ -163,10 +175,21 @@ namespace ProjetDotNet.Controllers
             catch (Exception ex)
             {
                 TempData["errorMessage"] = ex.Message;
+                if (uploadedImage is not null) CleanupUpload(uploadedImage);
                 return View(productToUpdate);
             }
         }
 
+        private void CleanupUpload(string name)
+        {
+            try { _fileService.DeleteFile(name); }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                HttpContext.RequestServices.GetRequiredService<ILogger<ProductController>>().LogError(ex, "Uploaded image cleanup failed");
+            }
+        }
+
+        [HttpPost]
         public async Task<IActionResult> DeleteProduct(int id)
         {
             try

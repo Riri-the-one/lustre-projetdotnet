@@ -15,14 +15,23 @@ namespace ProjetDotNet.Controllers
             _cartRepo = cartRepo;
         }
 
+        [HttpPost]
         public async Task<IActionResult> AddItem(int productId, int qty = 1, int redirect = 0)
         {
-            var cartCount = await _cartRepo.AddItem(productId, qty);
+            int cartCount;
+            try { cartCount = await _cartRepo.AddItem(productId, qty); }
+            catch (InvalidOperationException)
+            {
+                if (redirect == 0) return BadRequest(new { message = "The product or requested quantity is unavailable." });
+                TempData["errorMessage"] = "The requested quantity is unavailable.";
+                return RedirectToAction(nameof(GetUserCart));
+            }
             if (redirect == 0)
                 return Ok(cartCount);
             return RedirectToAction("GetUserCart");
         }
 
+        [HttpPost]
         public async Task<IActionResult> RemoveItem(int productId)
         {
             var cartCount = await _cartRepo.RemoveItem(productId);
@@ -41,9 +50,10 @@ namespace ProjetDotNet.Controllers
             return Ok(cartItem);
         }
 
+        [HttpGet]
         public IActionResult Checkout()
         {
-            return View();
+            return View(new CheckoutModel { CheckoutToken = Guid.NewGuid() });
         }
 
         [HttpPost]

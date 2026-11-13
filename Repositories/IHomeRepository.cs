@@ -1,4 +1,3 @@
-using Humanizer.Localisation;
 
 namespace ProjetDotNet
 {

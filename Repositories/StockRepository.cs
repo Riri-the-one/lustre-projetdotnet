@@ -19,7 +19,11 @@ namespace ProjetDotNet.Repositories
         // Add or update stock
         public async Task ManageStock(StockDTO stockToManage)
         {
+            if (stockToManage.Quantity < 0 || !await _context.Products.AnyAsync(p => p.Id == stockToManage.ProductId))
+                throw new InvalidOperationException("Invalid stock update.");
             var existingStock = await GetStockByProductId(stockToManage.ProductId);
+            if (stockToManage.OriginalQuantity != (existingStock?.Quantity ?? 0))
+                throw new InvalidOperationException("Stock changed; reload before updating.");
             if (existingStock is null)
             {
                 var stock = new Stock
@@ -46,7 +50,7 @@ namespace ProjetDotNet.Repositories
                                 into product_stock
                                 from productStock in product_stock.DefaultIfEmpty()
                                 where string.IsNullOrWhiteSpace(sTerm)
-                                      || product.ProductName.ToLower().Contains(sTerm.ToLower())
+                                      || (product.ProductName ?? "").ToLower().Contains(sTerm.ToLower())
                                 select new StockDisplayModel
                                 {
                                     ProductId = product.Id,

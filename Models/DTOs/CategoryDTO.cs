@@ -8,6 +8,6 @@ namespace ProjetDotNet.Models.DTOs
 
         [Required]
         [MaxLength(40)]
-        public string CategoryName { get; set; }
+        public string CategoryName { get; set; } = string.Empty;
     }
 }

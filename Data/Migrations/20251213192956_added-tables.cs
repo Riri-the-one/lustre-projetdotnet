@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ProjetDotNet.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class addedtables : Migration
+    public partial class AddedTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

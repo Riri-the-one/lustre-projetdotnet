@@ -19,20 +19,42 @@ namespace ProjetDotNet.Repositories
             _context = context;
         }
 
+        private async Task Validate(Product product)
+        {
+            if (product.Price <= 0 || product.Price > 999999.99m
+                || decimal.Round(product.Price, 2) != product.Price
+                || string.IsNullOrWhiteSpace(product.ProductName)
+                || string.IsNullOrWhiteSpace(product.BrandName)
+                || !await _context.Categories.AnyAsync(c => c.Id == product.CategoryId))
+                throw new InvalidOperationException("Invalid product.");
+        }
+
         public async Task AddProduct(Product product)
         {
+            await Validate(product);
+            product.Id = 0;
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
         }
 
         public async Task UpdateProduct(Product product)
         {
-            _context.Products.Update(product);
+            await Validate(product);
+            var existing = await _context.Products.FindAsync(product.Id)
+                ?? throw new InvalidOperationException("Product not found.");
+            existing.ProductName = product.ProductName;
+            existing.BrandName = product.BrandName;
+            existing.Price = product.Price;
+            existing.CategoryId = product.CategoryId;
+            existing.Image = product.Image;
             await _context.SaveChangesAsync();
         }
 
         public async Task DeleteProduct(Product product)
         {
+            if (await _context.OrderDetails.AnyAsync(d => d.ProductId == product.Id)
+                || await _context.CartDetails.AnyAsync(d => d.ProductId == product.Id))
+                throw new InvalidOperationException("A referenced product cannot be deleted.");
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
         }

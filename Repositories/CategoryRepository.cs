@@ -34,6 +34,8 @@ namespace ProjetDotNet.Repositories
 
         public async Task DeleteCategory(Category category)
         {
+            if (await _context.Products.AnyAsync(p => p.CategoryId == category.Id))
+                throw new InvalidOperationException("A category containing products cannot be deleted.");
             _context.Categories.Remove(category);
             await _context.SaveChangesAsync();
         }

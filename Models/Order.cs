@@ -7,8 +7,9 @@ namespace ProjetDotNet.Models
     public class Order
     {
         public int Id { get; set; }
+        public Guid? CheckoutToken { get; set; }
         [Required]
-        public string UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
         public DateTime CreateDate { get; set; } = DateTime.UtcNow;
         [Required]
         public int OrderStatusId { get; set; }
@@ -31,7 +32,7 @@ namespace ProjetDotNet.Models
         public string? PaymentMethod { get; set; }
         public bool IsPaid { get; set; }
 
-        public OrderStatus OrderStatus { get; set; }
-        public List<OrderDetail> OrderDetails { get; set; }
+        public OrderStatus OrderStatus { get; set; } = null!;
+        public List<OrderDetail> OrderDetails { get; set; } = [];
     }
 }

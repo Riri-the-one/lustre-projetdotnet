@@ -17,7 +17,7 @@ namespace ProjetDotNet.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.11")
+                .HasAnnotation("ProductVersion", "10.0.15")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -237,14 +237,16 @@ namespace ProjetDotNet.Data.Migrations
                     b.Property<int>("ShoppingCartId")
                         .HasColumnType("int");
 
-                    b.Property<double>("UnitPrice")
-                        .HasColumnType("float");
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ProductId");
 
-                    b.HasIndex("ShoppingCartId");
+                    b.HasIndex("ShoppingCartId", "ProductId")
+                        .IsUnique();
 
                     b.ToTable("CartDetail");
                 });
@@ -280,6 +282,9 @@ namespace ProjetDotNet.Data.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<Guid?>("CheckoutToken")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
@@ -292,6 +297,7 @@ namespace ProjetDotNet.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsPaid")
+                        .IsConcurrencyToken()
                         .HasColumnType("bit");
 
                     b.Property<string>("MobileNumber")
@@ -304,6 +310,7 @@ namespace ProjetDotNet.Data.Migrations
                         .HasColumnType("nvarchar(30)");
 
                     b.Property<int>("OrderStatusId")
+                        .IsConcurrencyToken()
                         .HasColumnType("int");
 
                     b.Property<string>("PaymentMethod")
@@ -316,6 +323,10 @@ namespace ProjetDotNet.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CheckoutToken")
+                        .IsUnique()
+                        .HasFilter("[CheckoutToken] IS NOT NULL");
 
                     b.HasIndex("OrderStatusId");
 
@@ -339,8 +350,9 @@ namespace ProjetDotNet.Data.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<double>("UnitPrice")
-                        .HasColumnType("float");
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -391,8 +403,9 @@ namespace ProjetDotNet.Data.Migrations
                     b.Property<string>("Image")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("Price")
-                        .HasColumnType("float");
+                    b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ProductName")
                         .IsRequired()
@@ -419,9 +432,12 @@ namespace ProjetDotNet.Data.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("ShoppingCart");
                 });
@@ -438,6 +454,7 @@ namespace ProjetDotNet.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
+                        .IsConcurrencyToken()
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -540,7 +557,7 @@ namespace ProjetDotNet.Data.Migrations
                     b.HasOne("ProjetDotNet.Models.Product", "Product")
                         .WithMany("OrderDetail")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Order");

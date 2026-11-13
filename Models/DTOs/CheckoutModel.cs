@@ -2,8 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ProjetDotNet.Models.DTOs;
 
-public class CheckoutModel
-{
+public class CheckoutModel {
+    public Guid CheckoutToken { get; set; }
     [Required]
     [MaxLength(30)]
     public string? Name { get; set; }

@@ -407,7 +407,7 @@
 					@foreach (var order in Model)
 					{
 						var totalAmount = order.OrderDetails?.Sum(od => od.Quantity * od.UnitPrice) ?? 0;
-						<div class="order-item" data-order-id="@order.Id" onclick="selectOrder(@order.Id)">
+						<div class="order-item" role="button" tabindex="0" onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); selectOrder(@order.Id); }" data-order-id="@order.Id" onclick="selectOrder(@order.Id)">
 							<div class="order-item-header">
 								<span class="order-id">#@order.Id</span>
 								<span class="order-date">@order.CreateDate.ToString("dd MMM yyyy")</span>
@@ -458,41 +458,19 @@
 
 		<!-- Store order data for JavaScript -->
 		<script>
-			const ordersData = {
-				@foreach (var order in Model)
-				{
-					var totalAmount = order.OrderDetails?.Sum(od => od.Quantity * od.UnitPrice) ?? 0;
-					<text>
-					@order.Id: {
-						id: @order.Id,
-						date: "@order.CreateDate.ToString("dd MMM yyyy HH:mm")",
-						name: "@order.Name",
-						email: "@order.Email",
-						mobile: "@order.MobileNumber",
-						address: "@order.Address",
-						paymentMethod: "@order.PaymentMethod",
-						isPaid: @order.IsPaid.ToString().ToLower(),
-						status: "@order.OrderStatus?.StatusName",
-						statusId: @order.OrderStatusId,
-						totalAmount: @totalAmount,
-						items: [
-							@foreach (var item in order.OrderDetails ?? new List<OrderDetail>())
-							{
-								<text>
-								{
-									productName: "@item.Product?.ProductName",
-									category: "@item.Product?.Category?.CategoryName",
-									price: @item.UnitPrice,
-									quantity: @item.Quantity,
-									total: @(item.Quantity * item.UnitPrice)
-								},
-								</text>
-							}
-						]
-					},
-					</text>
-				}
-			};
+            const ordersData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ToDictionary(o => o.Id, o => new {
+                id = o.Id, date = o.CreateDate.ToString("dd MMM yyyy HH:mm"), name = o.Name, email = o.Email,
+                mobile = o.MobileNumber, address = o.Address, paymentMethod = o.PaymentMethod, isPaid = o.IsPaid,
+                status = o.OrderStatus?.StatusName, statusId = o.OrderStatusId,
+                totalAmount = o.OrderDetails?.Sum(d => d.Quantity * d.UnitPrice) ?? 0,
+                items = o.OrderDetails?.Select(d => new { productName = d.Product?.ProductName,
+                    category = d.Product?.Category?.CategoryName, price = d.UnitPrice, quantity = d.Quantity, total = d.Quantity * d.UnitPrice })
+            })));
+            const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+            for (const order of Object.values(ordersData)) {
+                for (const key of ['name','email','mobile','address','paymentMethod','status']) order[key] = escapeHtml(order[key]);
+                for (const item of order.items ?? []) { item.productName = escapeHtml(item.productName); item.category = escapeHtml(item.category); }
+            }
 
 			const availableStatuses = [
 				@foreach (var status in ViewBag.OrderStatuses as IEnumerable<dynamic> ?? new List<dynamic>())
@@ -519,13 +497,13 @@
 
 	function selectOrder(orderId) {
 		selectedOrderId = orderId;
-		
+
 		// Update active state
 		document.querySelectorAll('.order-item').forEach(item => {
 			item.classList.remove('active');
 		});
 		document.querySelector(`[data-order-id="${orderId}"]`).classList.add('active');
-		
+
 		// Update status badges
 		const order = ordersData[orderId];
 		if (order) {
@@ -536,20 +514,20 @@
 				}
 			});
 		}
-		
+
 		// Render details
 		renderOrderDetails(order);
 	}
 
 	function filterByStatus(statusName) {
 		selectedStatus = statusName;
-		
+
 		// Update active state
 		document.querySelectorAll('.status-badge').forEach(badge => {
 			badge.classList.remove('active');
 		});
 		document.querySelector(`[data-status="${statusName}"]`).classList.add('active');
-		
+
 		// Filter orders
 		document.querySelectorAll('.order-item').forEach(item => {
 			const orderId = parseInt(item.dataset.orderId);
@@ -560,7 +538,7 @@
 				item.style.display = 'none';
 			}
 		});
-		
+
 		// Clear details if no order matches
 		if (!selectedOrderId || ordersData[selectedOrderId].status !== statusName) {
 			document.getElementById('detailsPanel').innerHTML = `
@@ -574,7 +552,7 @@
 
 	function renderOrderDetails(order) {
 		if (!order) return;
-		
+
 		const statusClass = order.status.toLowerCase();
 		const statusColors = {
 			pending: '#ffc107',
@@ -583,10 +561,10 @@
 			delivered: '#28a745',
 			cancelled: '#dc3545'
 		};
-		
+
 		const detailsHtml = `
 			<div class="details-panel-header">Order #${order.id}</div>
-			
+
 			<div class="detail-section">
 				<div class="detail-section-title">Customer Information</div>
 				<div class="detail-row">
@@ -606,7 +584,7 @@
 					<span class="detail-value">${order.address}</span>
 				</div>
 			</div>
-			
+
 			<div class="detail-section">
 				<div class="detail-section-title">Order Information</div>
 				<div class="detail-row">
@@ -652,7 +630,7 @@
 					<span class="detail-value" style="font-size: 20px; font-weight: 600; color: var(--light-brown);">${order.totalAmount.toFixed(2)} MAD</span>
 				</div>
 			</div>
-			
+
 			<div class="detail-section">
 				<div class="detail-section-title">Order Items</div>
 				<table class="order-items-table">
@@ -678,42 +656,41 @@
 					</tbody>
 				</table>
 			</div>
-			
+
 			<div class="action-buttons">
-				<a href="/AdminOperations/TogglePaymentStatus?orderId=${order.id}" class="action-btn action-btn-warning">
-					<i class="bi bi-credit-card"></i> Toggle Payment
-				</a>
+				<button type="button" class="action-btn action-btn-warning" onclick="confirmPayment(${order.id})">Confirm simulated payment</button>
 			</div>
 		`;
-		
+
 		document.getElementById('detailsPanel').innerHTML = detailsHtml;
 	}
 
 	function updateOrderStatus(orderId) {
 		const selectElement = document.getElementById(`status-select-${orderId}`);
 		const messageElement = document.getElementById(`status-update-message-${orderId}`);
-		
+
 		if (!selectElement || !messageElement) return;
-		
+
 		const newStatusId = parseInt(selectElement.value);
 		const order = ordersData[orderId];
-		
+
 		if (!order || order.statusId === newStatusId) {
 			messageElement.textContent = 'Status is already set to this value';
 			messageElement.style.color = '#856404';
 			setTimeout(() => messageElement.textContent = '', 3000);
 			return;
 		}
-		
+
 		// Show loading message
 		messageElement.textContent = 'Updating...';
 		messageElement.style.color = '#17a2b8';
-		
+
 		// Make AJAX request
 		fetch('/AdminOperations/UpdateOrderStatusAjax', {
 			method: 'POST',
 			headers: {
-				'Content-Type': 'application/json'
+				'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
 			},
 			body: JSON.stringify({
 				orderId: orderId,
@@ -726,14 +703,14 @@
 				// Update order data
 				order.statusId = data.newStatusId;
 				order.status = data.newStatus;
-				
+
 				// Update UI
 				const statusBadge = document.getElementById('current-status-badge');
 				if (statusBadge) {
 					const statusClass = data.newStatus.toLowerCase();
 					statusBadge.className = `status-badge ${statusClass}`;
 					statusBadge.textContent = data.newStatus;
-					
+
 					// Update status badge colors
 					const statusColors = {
 						pending: '#ffc107',
@@ -745,7 +722,7 @@
 					statusBadge.style.background = statusColors[statusClass] || '#6c757d';
 					statusBadge.style.color = 'white';
 				}
-				
+
 				// Update status badges in middle panel
 				document.querySelectorAll('.status-badge').forEach(badge => {
 					badge.classList.remove('active');
@@ -753,17 +730,17 @@
 						badge.classList.add('active');
 					}
 				});
-				
+
 				// Update order item in left panel if status is visible
 				const orderItem = document.querySelector(`[data-order-id="${orderId}"]`);
 				if (orderItem) {
 					// Refresh order list to reflect status change
 					// The order might need to be moved or highlighted differently
 				}
-				
+
 				messageElement.textContent = 'Status updated successfully!';
 				messageElement.style.color = '#28a745';
-				
+
 				// Reload page after 1 second to refresh all data
 				setTimeout(() => {
 					window.location.reload();
@@ -793,4 +770,14 @@
 			selectOrder(orderId);
 		}
 	});
+</script>
+
+<script>
+async function confirmPayment(id) {
+    const response = await fetch('/AdminOperations/TogglePaymentStatus?orderId=' + id, {
+        method: 'POST', headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
+    });
+    if (response.ok) location.reload();
+    else alert('Payment could not be confirmed. Refresh and try again.');
+}
 </script>

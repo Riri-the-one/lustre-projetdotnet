@@ -1,4 +1,4 @@
-using Microsoft.Build.Framework;
+using System.ComponentModel.DataAnnotations;
 using ProjetDotNet.Models;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -15,8 +15,8 @@ namespace ProjetDotNet.Models
         [Required]
         public int Quantity { get; set; }
         [Required]
-        public double UnitPrice { get; set; }
-        public Product Product { get; set; }
-        public ShoppingCart ShoppingCart { get; set; } 
+        public decimal UnitPrice { get; set; }
+        public Product Product { get; set; } = null!;
+        public ShoppingCart ShoppingCart { get; set; } = null!;
     }
 }

@@ -1,0 +1,94 @@
+{
+  "verifiedAt": "2026-11-13T18:34:50.906Z",
+  "targetFramework": "net10.0",
+  "sdk": "10.0.404",
+  "microsoftPackages": "10.0.15",
+  "build": {
+    "configuration": "Release",
+    "errors": 0,
+    "warnings": 0
+  },
+  "tests": {
+    "total": 61,
+    "executed": 61,
+    "passed": 61,
+    "failed": 0,
+    "error": 0,
+    "timeout": 0,
+    "aborted": 0,
+    "inconclusive": 0,
+    "passedButRunAborted": 0,
+    "notRunnable": 0,
+    "notExecuted": 0,
+    "disconnected": 0,
+    "warning": 0,
+    "completed": 0,
+    "inProgress": 0,
+    "pending": 0
+  },
+  "browser": {
+    "passedChecks": 17,
+    "javascriptErrors": 0,
+    "localHttpErrors": 0,
+    "horizontalOverflow": 0
+  },
+  "dependencies": {
+    "packagesChecked": 110,
+    "advisories": 0
+  },
+  "migration": {
+    "modelSnapshotConsistent": true,
+    "sqlGenerated": true,
+    "appliedToSqlServer": false
+  },
+  "git": {
+    "branch": "feat/lustre-portfolio-finalization",
+    "diffCheckExitCode": 0,
+    "committed": false,
+    "pushed": false,
+    "pullRequest": null,
+    "remoteCi": null
+  },
+  "screenshots": [
+    {
+      "file": "admin-dashboard.png",
+      "sha256": "9f60b4bb39350b186bd6c878af6ae38d1c65921f237d0eb33b0d404b76be6071"
+    },
+    {
+      "file": "admin-orders.png",
+      "sha256": "92190d5e548b27949789b17061ea173b0810468d5c171c1024655bb58a965f58"
+    },
+    {
+      "file": "admin-products.png",
+      "sha256": "7922a9485496ec4e4484427eababe7a049ba86a3e37d46b6864a4528e17fdfb9"
+    },
+    {
+      "file": "admin-stock.png",
+      "sha256": "d6787c0d905bfebf67e1b6014e6c0fa9ab6bd45a39462dbc329916b7fc82df14"
+    },
+    {
+      "file": "cart.png",
+      "sha256": "c7ecfd98de6e9cebadfc56d8360fcd61ed8b9e06562ae09ef014016089b9719b"
+    },
+    {
+      "file": "catalogue.png",
+      "sha256": "2c801f5dd513f7fa034e46dd2ff1da04c46e006e6df5a852583d5f0f533c2b4f"
+    },
+    {
+      "file": "checkout.png",
+      "sha256": "1f60156488a78b0cd6a91ef11040b27ee64e6e282f1e3e49554ec8bcfe37fa78"
+    },
+    {
+      "file": "home-desktop.png",
+      "sha256": "6c0f6510cd2909bbc7aac96ee59de07a0b5101f5086e679407fa405a4d97c336"
+    },
+    {
+      "file": "mobile.png",
+      "sha256": "0a3b2a74e592aba475b804a3809e25cd6c0540779ee0d72582d2a331e4230ad4"
+    },
+    {
+      "file": "orders.png",
+      "sha256": "f88fc731b2e5b1662f6761ca8aae0dd73086f5392c427e31e8f9d0373abad454"
+    }
+  ]
+}

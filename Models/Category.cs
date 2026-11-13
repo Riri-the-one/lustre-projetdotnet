@@ -12,7 +12,7 @@ namespace ProjetDotNet.Models
         [Required]
         [MaxLength(60)]
         public string? CategoryName { get; set; }
-        public List<Product> Products { get; set; }
+        public List<Product> Products { get; set; } = [];
 
 
 
